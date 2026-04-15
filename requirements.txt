@@ -1,5 +1,5 @@
 Flask
-openCV-python
+opencv-python
 numpy
 requests
 python-dotenv

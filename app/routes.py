@@ -12,10 +12,12 @@ qa_engine = QAEngine()
 @main.route('/', methods=['GET', 'POST'])
 
 def index():
-    player_info = " "
+    player_info = ""
     result_img_data = ""
     user_question = ""
     answer = ""
+    player_name = ""
+    
 
     if request.method == 'POST':
         if 'image' in request.files:
@@ -23,22 +25,25 @@ def index():
             
             if image_file:
                 image_bytes, face_coords = process_image(image_file)
+                player_info,player_name = celebrity_detector.identify(image_bytes)
 
                 if face_coords is not None:
                     result_img_data = base64.b64encode(image_bytes).decode('utf-8')
-                    player_info = celebrity_detector.identify(image_bytes)
+                    
                 else:
                     player_info = "No face detected. Please try another image."
-            elif 'question' in request.form:
+        elif 'question' in request.form:
                 user_question = request.form['question']
                 player_name = request.form['player_name']
+                result_img_data = request.form['result_img_data']
                 answer = qa_engine.ask_about_celebrities(player_name, user_question)
     return render_template(
-        'index.html',
+        "index.html",
         player_info=player_info,
         result_img_data=result_img_data,
         user_question=user_question,
-        answer=answer
+        answer=answer,
+        player_name=player_name 
     )
             
         
